@@ -1,1 +1,2 @@
 C:\Users\kchen12\Desktop\Fall2016\CSE379\KinectVirtualBand\KinectVirtualBand\KinectVirtualBand\bin\Debug\KinectVirtualBand.exe.config
+C:\Users\kchen12\Desktop\Fall2016\CSE379\gitKinect\KinectVirtualBand\KinectVirtualBand\KinectVirtualBand\bin\Debug\KinectVirtualBand.exe.config

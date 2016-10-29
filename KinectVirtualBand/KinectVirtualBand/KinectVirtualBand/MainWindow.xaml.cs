@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Microsoft.Kinect;
 
 namespace KinectVirtualBand
 {
@@ -22,7 +23,8 @@ namespace KinectVirtualBand
     {
         public MainWindow()
         {
-            InitializeComponent();
+            // figure out how to import library
+            private KinectSensor sensor;
         }
     }
 }
