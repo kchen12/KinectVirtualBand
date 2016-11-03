@@ -20,11 +20,13 @@ namespace KinectVirtualBand
     using Microsoft.Kinect;
     using Microsoft.Kinect.Toolkit;
 
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
+        private int handle = 0;
         /// <summary>
         /// Bitmap that will hold color information
         /// </summary>
@@ -66,6 +68,12 @@ namespace KinectVirtualBand
         private void WindowLoaded(object sender, RoutedEventArgs e)
         {
 
+            MidiOutCaps myCaps = new MidiOutCaps();
+            var res = MIDI.midiOutGetDevCaps(0, ref myCaps,
+               (UInt32)Marshal.SizeOf(myCaps));
+
+            res = MIDI.midiOutOpen(ref handle, 0, null, 0, 0);
+
             // Look through all sensors and start the first connected one.
             // This requires that a Kinect is connected at the time of app startup.
             // To make your app robust against plug/unplug, 
@@ -87,6 +95,7 @@ namespace KinectVirtualBand
                 //this.sensor.DepthStream.Enable();
 
                 // Add an event handler to be called whenever there is new color frame data
+                //this.sensor.AllFramesReady += delegate(object _sender, AllFramesReadyEventArgs _e) { this.SensorAllFramesReady(sender, e)};
                 this.sensor.AllFramesReady += this.SensorAllFramesReady;
 
                 // Turn on the color stream to receive color frames
@@ -113,6 +122,7 @@ namespace KinectVirtualBand
             {
                 //this.statusBarText.Text = Properties.Resources.NoKinectReady;
             }
+            res = MIDI.midiOutClose(handle);
         }
 
         /// <summary>
@@ -135,6 +145,7 @@ namespace KinectVirtualBand
         /// <param name="e">event arguments</param>
         private void SensorAllFramesReady(object sender, AllFramesReadyEventArgs e)
         {
+
             // Color
             using (var frame = e.OpenColorImageFrame())
             {
@@ -193,46 +204,67 @@ namespace KinectVirtualBand
                             // COORDINATE MAPPING
                             foreach (Joint joint in body.Joints)
                             {
-                                // 3D coordinates in meters
-                                SkeletonPoint skeletonPoint = joint.Position;
-
-                                // 2D coordinates in pixels
-                                Point point = new Point();
-
-                                if (_mode == CameraMode.Color)
+                                // change this to not go through all joints
+                                if ((joint.JointType == JointType.HandRight) || (joint.JointType == JointType.HandLeft))
                                 {
-                                    // Skeleton-to-Color mapping
-                                    ColorImagePoint colorPoint = sensor.CoordinateMapper.MapSkeletonPointToColorPoint(skeletonPoint, ColorImageFormat.RgbResolution640x480Fps30);
+                                    // 3D coordinates in meters
+                                    SkeletonPoint skeletonPoint = joint.Position;
 
-                                    point.X = colorPoint.X;
-                                    point.Y = colorPoint.Y;
+                                    // 2D coordinates in pixels
+                                    Point point = new Point();
+
+                                    if (_mode == CameraMode.Color)
+                                    {
+                                        // Skeleton-to-Color mapping
+                                        ColorImagePoint colorPoint = sensor.CoordinateMapper.MapSkeletonPointToColorPoint(skeletonPoint, ColorImageFormat.RgbResolution640x480Fps30);
+
+                                        point.X = colorPoint.X;
+                                        point.Y = colorPoint.Y;
+                                    }
+                                    /*else if (_mode == CameraMode.Depth) // Remember to change the Image and Canvas size to 320x240.
+                                    {
+                                        // Skeleton-to-Depth mapping
+                                        DepthImagePoint depthPoint = sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(skeletonPoint, DepthImageFormat.Resolution320x240Fps30);
+
+                                        point.X = depthPoint.X;
+                                        point.Y = depthPoint.Y;
+                                    }*/
+
+                                    // DRAWING...
+                                    Ellipse ellipse = new Ellipse
+                                    {
+                                        Fill = Brushes.LightBlue,
+                                        Width = 20,
+                                        Height = 20
+                                    };
+
+                                    Canvas.SetLeft(ellipse, point.X - ellipse.Width / 2);
+                                    Canvas.SetTop(ellipse, point.Y - ellipse.Height / 2);
+
+                                    canvas.Children.Add(ellipse);
+
+                                    /*if((joint.JointType == JointType.HandRight) && (point.X > 100))
+                                    {
+                                        for (int i = 0; i < 1000; i++)
+                                        {
+                                            MIDI.midiOutShortMsg(handle, 0x007F1990);
+                                            MIDI.midiOutShortMsg(handle, 0x007F4A90);
+                                            MIDI.midiOutShortMsg(handle, 0x007F1990);
+                                            MIDI.midiOutShortMsg(handle, 0x007F4A90);
+                                            MIDI.midiOutShortMsg(handle, 0x007F1990);
+                                            MIDI.midiOutShortMsg(handle, 0x007F4A90);
+                                            MIDI.midiOutShortMsg(handle, 0x007F1990);
+                                            MIDI.midiOutShortMsg(handle, 0x007F4A90);
+                                        }
+                                    }*/
+                                    //res = MIDI.midiOutShortMsg(handle, 0x007F1990);
                                 }
-                                /*else if (_mode == CameraMode.Depth) // Remember to change the Image and Canvas size to 320x240.
-                                {
-                                    // Skeleton-to-Depth mapping
-                                    DepthImagePoint depthPoint = sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(skeletonPoint, DepthImageFormat.Resolution320x240Fps30);
-
-                                    point.X = depthPoint.X;
-                                    point.Y = depthPoint.Y;
-                                }*/
-
-                                // DRAWING...
-                                Ellipse ellipse = new Ellipse
-                                {
-                                    Fill = Brushes.LightBlue,
-                                    Width = 20,
-                                    Height = 20
-                                };
-
-                                Canvas.SetLeft(ellipse, point.X - ellipse.Width / 2);
-                                Canvas.SetTop(ellipse, point.Y - ellipse.Height / 2);
-
-                                canvas.Children.Add(ellipse);
                             }
                         }
                     }
                 }
             }
+            
         }
 
         public void DrawPoint(ColorImagePoint point)

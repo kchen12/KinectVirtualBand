@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace MIDITest
+namespace KinectVirtualBand
 {
 
     [StructLayout(LayoutKind.Sequential)]
@@ -23,34 +23,34 @@ namespace MIDITest
         public UInt32 dwSupport;
     }
 
-    class Program
+    class MIDI
     {
         // MCI INterface
         [DllImport("winmm.dll")]
-        private static extern long mciSendString(string command,
+        public static extern long mciSendString(string command,
            StringBuilder returnValue, int returnLength,
            IntPtr winHandle);
 
         // Midi API
         [DllImport("winmm.dll")]
-        private static extern int midiOutGetNumDevs();
+        public static extern int midiOutGetNumDevs();
 
         [DllImport("winmm.dll")]
-        private static extern int midiOutGetDevCaps(Int32 uDeviceID,
+        public static extern int midiOutGetDevCaps(Int32 uDeviceID,
            ref MidiOutCaps lpMidiOutCaps, UInt32 cbMidiOutCaps);
 
         [DllImport("winmm.dll")]
-        private static extern int midiOutOpen(ref int handle,
+        public static extern int midiOutOpen(ref int handle,
            int deviceID, MidiCallBack proc, int instance, int flags);
 
         [DllImport("winmm.dll")]
-        private static extern int midiOutShortMsg(int handle,
+        public static extern int midiOutShortMsg(int handle,
            int message);
 
         [DllImport("winmm.dll")]
-        private static extern int midiOutClose(int handle);
+        public static extern int midiOutClose(int handle);
 
-        private delegate void MidiCallBack(int handle, int msg,
+        public delegate void MidiCallBack(int handle, int msg,
            int instance, int param1, int param2);
 
         static string Mci(string command)
@@ -70,7 +70,7 @@ namespace MIDITest
             res = Mci("close crooner");
         }
 
-        static void Main()
+        /*static void Main()
         {
             int handle = 0;
 
@@ -84,29 +84,21 @@ namespace MIDITest
             //sMciMidiTest();
 
             res = midiOutOpen(ref handle, 0, null, 0, 0);
-            Console.WriteLine(handle);
+            Console.WriteLine(res);
 
-            byte[] data = new byte[4];
-
-            data[0] = 0x90;
-            data[1] = 50;
-            data[2] = 111;
-            uint msg = BitConverter.ToUInt32(data, 0);
-            
             // Figure out why it takes 10000 loops to play a note
             // figure out how to get how long the note is played
             for (int i = 0; i < 10000; i++)
             {
-                //midiOutShortMsg(handle, 0x007F1990);
-                //res = midiOutShortMsg(handle, 0x007F4A90);
-                midiOutShortMsg(handle, (int)msg);
+                res = midiOutShortMsg(handle, 0x007F1990);
+                res = midiOutShortMsg(handle, 0x007F4A90);
             }
-            
+
             res = midiOutClose(handle);
 
             Console.ReadLine();
 
-        }
+        }*/
 
     }
 

@@ -4,3 +4,9 @@ C:\Users\kchen12\Desktop\Fall2016\CSE379\KinectVirtualBand\MIDITest\MIDITest\bin
 C:\Users\kchen12\Desktop\Fall2016\CSE379\KinectVirtualBand\MIDITest\MIDITest\bin\Debug\MIDITest.pdb
 C:\Users\kchen12\Desktop\Fall2016\CSE379\KinectVirtualBand\MIDITest\MIDITest\obj\Debug\MIDITest.exe
 C:\Users\kchen12\Desktop\Fall2016\CSE379\KinectVirtualBand\MIDITest\MIDITest\obj\Debug\MIDITest.pdb
+C:\Users\kchen12\Desktop\Fall2016\CSE379\gitKinect\MIDITest\MIDITest\bin\Debug\MIDITest.exe.config
+C:\Users\kchen12\Desktop\Fall2016\CSE379\gitKinect\MIDITest\MIDITest\obj\Debug\MIDITest.exe
+C:\Users\kchen12\Desktop\Fall2016\CSE379\gitKinect\MIDITest\MIDITest\obj\Debug\MIDITest.pdb
+C:\Users\kchen12\Desktop\Fall2016\CSE379\gitKinect\MIDITest\MIDITest\bin\Debug\MIDITest.exe
+C:\Users\kchen12\Desktop\Fall2016\CSE379\gitKinect\MIDITest\MIDITest\bin\Debug\MIDITest.pdb
+C:\Users\kchen12\Desktop\Fall2016\CSE379\gitKinect\MIDITest\MIDITest\obj\Debug\MIDITest.csprojResolveAssemblyReference.cache
