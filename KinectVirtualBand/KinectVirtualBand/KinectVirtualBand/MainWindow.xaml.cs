@@ -19,14 +19,49 @@ namespace KinectVirtualBand
     using System.Windows.Controls;
     using Microsoft.Kinect;
     using Microsoft.Kinect.Toolkit;
+    using NAudio.Midi;
 
+    // create event handler for playing MIDI
+    public delegate void MIDIEventHandler(object sender, MIDIEventArgs e);
+
+    public class MIDIEventArgs : EventArgs
+    {
+        private int _note;
+        public MIDIEventArgs(int note)
+        {
+            _note = note;
+        }
+        public int GetNote()
+        {
+            return _note;
+        }
+    }
+
+    public class MIDIListener
+    {
+        public event MIDIEventHandler noteTriggered;
+        
+        public void add(int i)
+        {
+            if (i > 12)
+            {
+                // do nothing
+            }
+            else if (noteTriggered != null)
+            {
+                noteTriggered(this, new MIDIEventArgs(i));
+            }
+        }
+    }
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        private int handle = 0;
+        private MIDIListener MidiListener = new MIDIListener();
+        
+        private bool isPlaying = false;
         /// <summary>
         /// Bitmap that will hold color information
         /// </summary>
@@ -68,12 +103,6 @@ namespace KinectVirtualBand
         private void WindowLoaded(object sender, RoutedEventArgs e)
         {
 
-            MidiOutCaps myCaps = new MidiOutCaps();
-            var res = MIDI.midiOutGetDevCaps(0, ref myCaps,
-               (UInt32)Marshal.SizeOf(myCaps));
-
-            res = MIDI.midiOutOpen(ref handle, 0, null, 0, 0);
-
             // Look through all sensors and start the first connected one.
             // This requires that a Kinect is connected at the time of app startup.
             // To make your app robust against plug/unplug, 
@@ -89,15 +118,18 @@ namespace KinectVirtualBand
 
             if (null != this.sensor)
             {
+
+                MidiListener.noteTriggered += new MIDIEventHandler(playMusic);
+
                 // Turn on the skeleton stream to receive skeleton frames
                 this.sensor.SkeletonStream.Enable();
-
+                
                 //this.sensor.DepthStream.Enable();
 
                 // Add an event handler to be called whenever there is new color frame data
                 //this.sensor.AllFramesReady += delegate(object _sender, AllFramesReadyEventArgs _e) { this.SensorAllFramesReady(sender, e)};
                 this.sensor.AllFramesReady += this.SensorAllFramesReady;
-
+                
                 // Turn on the color stream to receive color frames
                 this.sensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
 
@@ -122,7 +154,6 @@ namespace KinectVirtualBand
             {
                 //this.statusBarText.Text = Properties.Resources.NoKinectReady;
             }
-            res = MIDI.midiOutClose(handle);
         }
 
         /// <summary>
@@ -138,6 +169,23 @@ namespace KinectVirtualBand
             }
         }
 
+        private void playMusic(object sender, MIDIEventArgs e)
+        {
+            if (isPlaying != true)
+            {
+                using (MidiOut midiOut = new MidiOut(0))
+                {
+                    //isPlaying = true;
+                    midiOut.Volume = 65535;
+                    midiOut.Send(MidiMessage.StartNote((60+e.GetNote()), 127, 1).RawData);
+                    System.Threading.Thread.Sleep(400);
+                    midiOut.Send(MidiMessage.StopNote(60+e.GetNote(), 0, 1).RawData);
+                    System.Threading.Thread.Sleep(400);
+                    //isPlaying = false;
+                }
+            }
+        }
+
         /// <summary>
         /// Event handler for Kinect sensor's SkeletonFrameReady event
         /// </summary>
@@ -145,6 +193,7 @@ namespace KinectVirtualBand
         /// <param name="e">event arguments</param>
         private void SensorAllFramesReady(object sender, AllFramesReadyEventArgs e)
         {
+            
 
             // Color
             using (var frame = e.OpenColorImageFrame())
@@ -243,21 +292,58 @@ namespace KinectVirtualBand
 
                                     canvas.Children.Add(ellipse);
 
-                                    /*if((joint.JointType == JointType.HandRight) && (point.X > 100))
+                                    point.Y = -point.Y+240;
+                                    point.X = point.X - 320;
+
+                                    System.Drawing.Point polPoint = cartToPol(point.X, point.Y);
+
+                                    if(joint.JointType == JointType.HandLeft)
                                     {
-                                        for (int i = 0; i < 1000; i++)
+                                        Console.WriteLine(polPoint.X + " " + polPoint.Y);
+                                    }
+
+                                    if((joint.JointType == JointType.HandRight || joint.JointType == JointType.HandLeft))
+                                    {
+                                        if (polPoint.X > 200)
                                         {
-                                            MIDI.midiOutShortMsg(handle, 0x007F1990);
-                                            MIDI.midiOutShortMsg(handle, 0x007F4A90);
-                                            MIDI.midiOutShortMsg(handle, 0x007F1990);
-                                            MIDI.midiOutShortMsg(handle, 0x007F4A90);
-                                            MIDI.midiOutShortMsg(handle, 0x007F1990);
-                                            MIDI.midiOutShortMsg(handle, 0x007F4A90);
-                                            MIDI.midiOutShortMsg(handle, 0x007F1990);
-                                            MIDI.midiOutShortMsg(handle, 0x007F4A90);
+                                            if(polPoint.Y >=-30 && polPoint.Y < 0)
+                                            {
+                                                MidiListener.add(0);
+                                            }
+                                            else if (polPoint.Y >= 0 && polPoint.Y < 30)
+                                            {
+                                                MidiListener.add(2);
+                                            }
+                                            else if (polPoint.Y >= 30 && polPoint.Y < 60)
+                                            {
+                                                MidiListener.add(4);
+                                            }
+                                            else if (polPoint.Y >= 60 && polPoint.Y < 90)
+                                            {
+                                                MidiListener.add(5);
+                                            }
+                                            else if (polPoint.Y >= 90 && polPoint.Y < 120)
+                                            {
+                                                MidiListener.add(7);
+                                            }
+                                            else if (polPoint.Y >= 120 && polPoint.Y < 150)
+                                            {
+                                                MidiListener.add(9);
+                                            }
+                                            else if (polPoint.Y >= 150 && polPoint.Y <= 180)
+                                            {
+                                                MidiListener.add(11);
+                                            }
+                                            else if (polPoint.Y > -180 && polPoint.Y < -150)
+                                            {
+                                                MidiListener.add(12);
+                                            }
+                                            else
+                                            {
+                                                // do nothing
+                                            }
                                         }
-                                    }*/
-                                    //res = MIDI.midiOutShortMsg(handle, 0x007F1990);
+                                    }
                                 }
                             }
                         }
@@ -267,6 +353,20 @@ namespace KinectVirtualBand
             
         }
 
+        /// <summary>
+        /// takes cartesian points x and y and returns a point
+        /// note the "Point.x" is radius and "Point.Y" is theta
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
+        private System.Drawing.Point cartToPol(double x, double y)
+        {
+            double r = Math.Sqrt((x * x) + (y * y));
+            double theta = Math.Atan2(y, x);
+            return new System.Drawing.Point((int)r,(int)((theta*180)/Math.PI));
+        }
+
         public void DrawPoint(ColorImagePoint point)
         {
             // Create an ellipse.
@@ -274,7 +374,7 @@ namespace KinectVirtualBand
             {
                 Width = 20,
                 Height = 20,
-                Fill = Brushes.Red
+                Fill = System.Windows.Media.Brushes.Red
             };
 
             // Position the ellipse according to the point's coordinates.

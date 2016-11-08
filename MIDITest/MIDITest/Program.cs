@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
+using NAudio.Midi;
 
 namespace MIDITest
 {
@@ -72,39 +74,15 @@ namespace MIDITest
 
         static void Main()
         {
-            int handle = 0;
-
-            var numDevs = midiOutGetNumDevs();
-            Console.WriteLine("You have {0} midi output devices", numDevs);
-            //Console.WriteLine(numDevs);
-            MidiOutCaps myCaps = new MidiOutCaps();
-            var res = midiOutGetDevCaps(0, ref myCaps,
-               (UInt32)Marshal.SizeOf(myCaps));
-
-            //sMciMidiTest();
-
-            res = midiOutOpen(ref handle, 0, null, 0, 0);
-            Console.WriteLine(handle);
-
-            byte[] data = new byte[4];
-
-            data[0] = 0x90;
-            data[1] = 50;
-            data[2] = 111;
-            uint msg = BitConverter.ToUInt32(data, 0);
-            
-            // Figure out why it takes 10000 loops to play a note
-            // figure out how to get how long the note is played
-            for (int i = 0; i < 10000; i++)
+            using (MidiOut midiOut = new MidiOut(0))
             {
-                //midiOutShortMsg(handle, 0x007F1990);
-                //res = midiOutShortMsg(handle, 0x007F4A90);
-                midiOutShortMsg(handle, (int)msg);
+                midiOut.Volume = 65535;
+                midiOut.Send(MidiMessage.StartNote(100, 127, 0).RawData);
+                //MessageBox.Show("Sent");
+                Thread.Sleep(1000);
+                midiOut.Send(MidiMessage.StopNote(100, 0, 0).RawData);
+                Thread.Sleep(1000);
             }
-            
-            res = midiOutClose(handle);
-
-            Console.ReadLine();
 
         }
 

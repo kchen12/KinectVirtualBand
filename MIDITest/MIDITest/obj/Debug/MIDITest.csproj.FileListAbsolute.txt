@@ -10,3 +10,5 @@ C:\Users\kchen12\Desktop\Fall2016\CSE379\gitKinect\MIDITest\MIDITest\obj\Debug\M
 C:\Users\kchen12\Desktop\Fall2016\CSE379\gitKinect\MIDITest\MIDITest\bin\Debug\MIDITest.exe
 C:\Users\kchen12\Desktop\Fall2016\CSE379\gitKinect\MIDITest\MIDITest\bin\Debug\MIDITest.pdb
 C:\Users\kchen12\Desktop\Fall2016\CSE379\gitKinect\MIDITest\MIDITest\obj\Debug\MIDITest.csprojResolveAssemblyReference.cache
+C:\Users\kchen12\Desktop\Fall2016\CSE379\gitKinect\MIDITest\MIDITest\bin\Debug\NAudio.dll
+C:\Users\kchen12\Desktop\Fall2016\CSE379\gitKinect\MIDITest\MIDITest\bin\Debug\NAudio.WindowsMediaFormat.dll

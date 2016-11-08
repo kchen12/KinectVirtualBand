@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{235D8F5E-5F0B-4471-965E-A71D5AC7A5A9}</ProjectGuid>
+    <ProjectGuid>{0919981D-D0B8-4C9B-B790-8B673186157E}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MIDITest</RootNamespace>
-    <AssemblyName>MIDITest</AssemblyName>
+    <RootNamespace>NAudioTest</RootNamespace>
+    <AssemblyName>NAudioTest</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -36,14 +36,14 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="program.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="NAudio">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files\Microsoft SDKs\Kinect\Developer Toolkit v1.8.0\Assemblies\NAudio.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\..\..\Program Files\Microsoft SDKs\Kinect\Developer Toolkit v1.8.0\Assemblies\NAudio.dll</HintPath>
     </Reference>
     <Reference Include="NAudio.WindowsMediaFormat">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files\Microsoft SDKs\Kinect\Developer Toolkit v1.8.0\Assemblies\NAudio.WindowsMediaFormat.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\..\..\Program Files\Microsoft SDKs\Kinect\Developer Toolkit v1.8.0\Assemblies\NAudio.WindowsMediaFormat.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>

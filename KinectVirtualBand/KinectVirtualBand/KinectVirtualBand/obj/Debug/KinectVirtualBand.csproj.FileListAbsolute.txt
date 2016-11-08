@@ -15,3 +15,5 @@ C:\Users\kchen12\Desktop\Fall2016\CSE379\gitKinect\KinectVirtualBand\KinectVirtu
 C:\Users\kchen12\Desktop\Fall2016\CSE379\gitKinect\KinectVirtualBand\KinectVirtualBand\KinectVirtualBand\bin\Debug\Microsoft.Kinect.xml
 C:\Users\kchen12\Desktop\Fall2016\CSE379\gitKinect\KinectVirtualBand\KinectVirtualBand\KinectVirtualBand\obj\Debug\KinectVirtualBand.exe
 C:\Users\kchen12\Desktop\Fall2016\CSE379\gitKinect\KinectVirtualBand\KinectVirtualBand\KinectVirtualBand\obj\Debug\KinectVirtualBand.pdb
+C:\Users\kchen12\Desktop\Fall2016\CSE379\gitKinect\KinectVirtualBand\KinectVirtualBand\KinectVirtualBand\bin\Debug\NAudio.dll
+C:\Users\kchen12\Desktop\Fall2016\CSE379\gitKinect\KinectVirtualBand\KinectVirtualBand\KinectVirtualBand\bin\Debug\NAudio.WindowsMediaFormat.dll
