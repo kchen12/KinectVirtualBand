@@ -94,12 +94,19 @@ namespace KinectVirtualBand
     {
         private MIDIListener MidiListener = new MIDIListener();
 
+        // true = chord mode, false = notesmode
+        private bool playMode = true;
+
         private bool flag1 = false;
         private bool flag2 = false;
         private bool flag3 = false;
         private bool flag4 = false;
         private bool flag5 = false;
         private bool flag6 = false;
+
+        private Point origin = new Point(0,0);
+        private float bodZ = 0;
+
         /// <summary>
         /// Bitmap that will hold color information
         /// </summary>
@@ -133,10 +140,14 @@ namespace KinectVirtualBand
             InitializeComponent();
         }
 
+        /*
         public void noteHandler()
         {
-            MidiListener.noteTriggered += new MIDIEventHandler(playMusic);
-        }
+            while (true)
+            {
+                MidiListener.noteTriggered += new MIDIEventHandler(playMusic);
+            }
+        }*/
 
         /// <summary>
         /// Execute startup tasks
@@ -160,6 +171,7 @@ namespace KinectVirtualBand
 
             if (null != this.sensor)
             {
+                //lauch threads 
                 //Thread handThread = new Thread(noteHandler);
                 //handThread.Start();
                 //while (!handThread.IsAlive) ;
@@ -212,47 +224,130 @@ namespace KinectVirtualBand
                 this.sensor.Stop();
             }
         }
-
-        /*
+        
+        
         private void playMusic(object sender, MIDIEventArgs e)
         {
-            
-            if (isPlaying != true)
+            if (playMode == true)
             {
-                using (MidiOut midiOut = new MidiOut(0))
-                {
-                    //Thread handThread = new Thread(() => musicThread(midiOut, e.GetNote()));
-                    //handThread.Start();
-                    //while (!handThread.IsAlive) ;
-                    //isPlaying = true;
-                    midiOut.Volume = 65535;
-                    midiOut.Send(MidiMessage.StartNote((60 + e.GetNote()), 127, 1).RawData);
-                    System.Threading.Thread.Sleep(400);
-                    midiOut.Send(MidiMessage.StopNote(60 + e.GetNote(), 0, 1).RawData);
-                    System.Threading.Thread.Sleep(400);
-                    //isPlaying = false;
-                }
+                Thread handThread = new Thread(() => chordThread(e.GetNote()));
+                handThread.Start();
+                while (!handThread.IsAlive) ;
             }
-        }*/
-
-        private void playMusic(object sender, MIDIEventArgs e)
-        {
-            Thread handThread = new Thread(() => musicThread(e.GetNote()));
-            handThread.Start();
-            while (!handThread.IsAlive) ;
+            else
+            {
+                Thread handThread = new Thread(() => noteThread(e.GetNote()));
+                handThread.Start();
+                while (!handThread.IsAlive) ;
+            }
         }
 
-        private void musicThread(int note)
+        private void noteThread(int note)
         {
-            SineWaveOscillator osc = new SineWaveOscillator(44100);
-            osc.Frequency = note;
-            osc.Amplitude = 8192;
+            SineWaveOscillator osc1 = new SineWaveOscillator(44100);
 
-            WaveOut waveOut = new WaveOut();
-            waveOut.Init(osc);
-            waveOut.Play();
+            int note1 = (int)(440.0 * Math.Pow(2.0, ((double)(note + 59) - 69.0) / 12.0));
+
+            osc1.Frequency = note1;
+
+            osc1.Amplitude = 8192;
+
+            WaveOut waveOut1 = new WaveOut();
+
+            waveOut1.Init(osc1);
+
+            waveOut1.Play();
+
             Thread.Sleep(1000);
-            waveOut.Stop();
+
+            waveOut1.Stop();
+
+            switch (note)
+            {
+                case 1:
+                    flag1 = false;
+                    break;
+                case 5:
+                    flag2 = false;
+                    break;
+                case 8:
+                    flag3 = false;
+                    break;
+                case 13:
+                    flag4 = false;
+                    break;
+                case 16:
+                    flag5 = false;
+                    break;
+                case 19:
+                    flag6 = false;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void chordThread(int note)
+        {
+            SineWaveOscillator osc1 = new SineWaveOscillator(44100);
+            SineWaveOscillator osc2 = new SineWaveOscillator(44100);
+            SineWaveOscillator osc3 = new SineWaveOscillator(44100);
+
+            int note1 = (int)(440.0 * Math.Pow(2.0, ((double)(note+59) - 69.0) / 12.0));
+            int note2 = (int)(440.0 * Math.Pow(2.0, ((double)(note + 63) - 69.0) / 12.0));
+            int note3 = (int)(440.0 * Math.Pow(2.0, ((double)(note + 66) - 69.0) / 12.0));
+
+            osc1.Frequency = note1;
+            osc2.Frequency = note2;
+            osc3.Frequency = note3;
+
+            osc1.Amplitude = 8192;
+            osc2.Amplitude = 8192;
+            osc3.Amplitude = 8192;
+
+            WaveOut waveOut1 = new WaveOut();
+            WaveOut waveOut2 = new WaveOut();
+            WaveOut waveOut3 = new WaveOut();
+
+            waveOut1.Init(osc1);
+            waveOut2.Init(osc2);
+            waveOut3.Init(osc3);
+
+            waveOut1.Play();
+            waveOut2.Play();
+            waveOut3.Play();
+            
+            Thread.Sleep(1000);
+
+            waveOut1.Stop();
+            waveOut2.Stop();
+            waveOut3.Stop();
+
+            switch (note)
+            {
+                case 1:
+                    flag1 = false;
+                    break;
+                case 8:
+                    flag2 = false;
+                    break;
+                case 4:
+                    flag3 = false;
+                    break;
+                case 6:
+                    flag4 = false;
+                    break;
+                case 11:
+                    flag5 = false;
+                    break;
+                case 2:
+                    flag6 = false;
+                    break;
+                default:
+                    break;
+            }
+
+            /*
             switch (note)
             {
                 case 261:
@@ -261,7 +356,7 @@ namespace KinectVirtualBand
                 case 329:
                     flag2 = false;
                     break;
-                case 392:
+                case 391:
                     flag3 = false;
                     break;
                 case 523:
@@ -270,13 +365,13 @@ namespace KinectVirtualBand
                 case 659:
                     flag5 = false;
                     break;
-                case 784:
+                case 783:
                     flag6 = false;
                     break;
                 default:
                     break;
-            }
-            
+            }*/
+
         }
 
         /// <summary>
@@ -341,13 +436,25 @@ namespace KinectVirtualBand
                     {
                         if (body.TrackingState == SkeletonTrackingState.Tracked)
                         {
+                            if(Math.Abs(body.Joints[JointType.HandRight].Position.X-body.Joints[JointType.HandLeft].Position.X)<0.01 && Math.Abs(body.Joints[JointType.HandRight].Position.Y - body.Joints[JointType.HandLeft].Position.Y) < 0.01)
+                            {
+                                if(playMode == true)
+                                {
+                                    playMode = false;
+                                }
+                                else
+                                {
+                                    playMode = true;
+                                }
+                            }
                             // COORDINATE MAPPING
                             foreach (Joint joint in body.Joints)
                             {
                                 // get center of body
-                                Point origin = new Point();
+                                
                                 if(joint.JointType == JointType.HipCenter)
                                 {
+                                    bodZ = joint.Position.Z;
                                     ColorImagePoint colorPoint = sensor.CoordinateMapper.MapSkeletonPointToColorPoint(joint.Position, ColorImageFormat.RgbResolution640x480Fps30);
                                     origin.X = colorPoint.X;
                                     origin.Y = colorPoint.Y;
@@ -371,13 +478,6 @@ namespace KinectVirtualBand
                                         point.X = colorPoint.X;
                                         point.Y = colorPoint.Y;
                                     }
-                                    /*else if (_mode == CameraMode.Depth) // Remember to change the Image and Canvas size to 320x240.
-                                    {
-                                        // Skeleton-to-Depth mapping
-                                        DepthImagePoint depthPoint = sensor.CoordinateMapper.MapSkeletonPointToDepthPoint(skeletonPoint, DepthImageFormat.Resolution320x240Fps30);
-                                        point.X = depthPoint.X;
-                                        point.Y = depthPoint.Y;
-                                    }*/
 
                                     // DRAWING...
                                     Ellipse ellipse = new Ellipse
@@ -392,127 +492,143 @@ namespace KinectVirtualBand
 
                                     canvas.Children.Add(ellipse);
 
-                                    Console.WriteLine(origin.X + " " + origin.Y);
-                                    point.Y = -point.Y + 240;
-                                    point.X = point.X - 320;
+                                    double xoff = origin.X;
+                                    double yoff = origin.Y;
+                                    // 240 320
+                                    
+                                    point.Y = -point.Y + yoff;
+                                    point.X = point.X - xoff;
 
                                     System.Drawing.Point polPoint = cartToPol(point.X, point.Y);
 
-                                    //if (joint.JointType == JointType.HipCenter)
-                                    //{
-                                        //Console.WriteLine(polPoint.X + " " + polPoint.Y);
-                                    //}
-
-                                    
                                     if ((joint.JointType == JointType.HandRight || joint.JointType == JointType.HandLeft))
                                     {
-                                        if (polPoint.X > 200)
+                                        float scale = 4f*(bodZ-joint.Position.Z);
+                                        scale = 1f;
+                                        //Console.WriteLine("hipDist: " + bodZ + " handDist: " + joint.Position.Z + " scale: " + scale);
+                                        //Console.WriteLine("scale: " + scale);
+                                        if (polPoint.X > 100)
                                         {
                                             if (polPoint.Y >= -30 && polPoint.Y < 10)
                                             {
-                                                if (flag1 == true)
-                                                {
-
-                                                }
-                                                else
+                                                if (flag1 != true)
                                                 {
                                                     flag1 = true;
-                                                    MidiListener.add(261);
+                                                    int pitch = (int)(60 );
+                                                    //int note = (int)(440.0 * Math.Pow(2.0, ((double)(pitch) - 69.0) / 12.0));
+                                                    //Console.WriteLine(note);
+                                                    // 261
+                                                    if (playMode == true)
+                                                    {
+                                                        MidiListener.add(1);
+                                                    }
+                                                    else
+                                                    {
+                                                        MidiListener.add(1);
+                                                    }
                                                 }
                                             }
                                             else if (polPoint.Y >= 10 && polPoint.Y < 50)
                                             {
-                                                if (flag2 == true)
-                                                {
-
-                                                }
-                                                else
+                                                if (flag2 != true)
                                                 {
                                                     flag2 = true;
-                                                    MidiListener.add(329);
+                                                    int pitch = (int)(64 );
+                                                    //Console.WriteLine(pitch);
+                                                    //int note = (int)(440.0 * Math.Pow(2.0, ((double)(pitch) - 69.0) / 12.0));
+                                                    //Console.WriteLine(note);
+                                                    //329
+                                                    if (playMode == true)
+                                                    {
+                                                        MidiListener.add(8);
+                                                    }
+                                                    else
+                                                    {
+                                                        MidiListener.add(5);
+                                                    }
                                                 }
                                             }
                                             else if (polPoint.Y >= 50 && polPoint.Y < 90)
                                             {
-                                                if (flag3 == true)
-                                                {
-
-                                                }
-                                                else
+                                                if (flag3 != true)
                                                 {
                                                     flag3 = true;
-                                                    MidiListener.add(392);
+                                                    int pitch = (int)(67);
+                                                    //Console.WriteLine(pitch);
+                                                    //int note = (int)(440.0 * Math.Pow(2.0, ((double)(pitch) - 69.0) / 12.0));
+                                                    //Console.WriteLine(note);
+                                                    //391
+                                                    if (playMode == true)
+                                                    {
+                                                        MidiListener.add(4);
+                                                    }
+                                                    else
+                                                    {
+                                                        MidiListener.add(8);
+                                                    }
                                                 }
                                             }
                                             else if (polPoint.Y >= 90 && polPoint.Y < 130)
                                             {
-                                                if (flag4 == true)
-                                                {
-
-                                                }
-                                                else
+                                                if (flag4 != true)
                                                 {
                                                     flag4 = true;
-                                                    MidiListener.add(523);
+                                                    int pitch = (int)(72 );
+                                                    //Console.WriteLine(pitch);
+                                                    //int note = (int)(440.0 * Math.Pow(2.0, ((double)(pitch) - 69.0) / 12.0));
+                                                    //Console.WriteLine(note);
+                                                    //523
+                                                    if (playMode == true)
+                                                    {
+                                                        MidiListener.add(6);
+                                                    }
+                                                    else
+                                                    {
+                                                        MidiListener.add(13);
+                                                    }
                                                 }
                                             }
                                             else if (polPoint.Y >= 130 && polPoint.Y < 170)
                                             {
-                                                if (flag5 == true)
-                                                {
-
-                                                }
-                                                else
+                                                if (flag5 != true)
                                                 {
                                                     flag5 = true;
-                                                    MidiListener.add(659);
+                                                    int pitch = (int)(76 );
+                                                    //Console.WriteLine(pitch);
+                                                    //int note = (int)(440.0 * Math.Pow(2.0, ((double)(pitch) - 69.0) / 12.0));
+                                                    //Console.WriteLine(note);
+                                                    //659
+                                                    if (playMode == true)
+                                                    {
+                                                        MidiListener.add(11);
+                                                    }
+                                                    else
+                                                    {
+                                                        MidiListener.add(16);
+                                                    }
                                                 }
                                             }
-                                            else if (polPoint.Y >= 170 && polPoint.Y < 210)
+                                            else if (polPoint.Y >= 170 && polPoint.Y < 230)
                                             {
-                                                if (flag6 == true)
-                                                {
-
-                                                }
-                                                else
+                                                if (flag6 != true)
                                                 {
                                                     flag6 = true;
-                                                    MidiListener.add(784);
+                                                    int pitch = (int)(79 );
+                                                    //Console.WriteLine(pitch);
+                                                    //int note = (int)(440.0 * Math.Pow(2.0, ((double)(pitch) - 69.0) / 12.0));
+                                                    //Console.WriteLine(note);
+                                                    //783
+                                                    if (playMode == true)
+                                                    {
+                                                        MidiListener.add(2);
+                                                    }
+                                                    else
+                                                    {
+                                                        MidiListener.add(19);
+                                                    }
                                                 }
                                             }
-                                            /*
-                                            if (polPoint.Y >= -30 && polPoint.Y < 0)
-                                            {
-                                                MidiListener.add(0);
-                                            }
-                                            else if (polPoint.Y >= 0 && polPoint.Y < 30)
-                                            {
-                                                MidiListener.add(2);
-                                            }
-                                            else if (polPoint.Y >= 30 && polPoint.Y < 60)
-                                            {
-                                                MidiListener.add(4);
-                                            }
-                                            else if (polPoint.Y >= 60 && polPoint.Y < 90)
-                                            {
-                                                MidiListener.add(5);
-                                            }
-                                            else if (polPoint.Y >= 90 && polPoint.Y < 120)
-                                            {
-                                                MidiListener.add(7);
-                                            }
-                                            else if (polPoint.Y >= 120 && polPoint.Y < 150)
-                                            {
-                                                MidiListener.add(9);
-                                            }
-                                            else if (polPoint.Y >= 150 && polPoint.Y <= 180)
-                                            {
-                                                MidiListener.add(11);
-                                            }
-                                            else if (polPoint.Y > -180 && polPoint.Y < -150)
-                                            {
-                                                MidiListener.add(12);
-                                            }*/
+                                            
                                             else
                                             {
                                                 // do nothing

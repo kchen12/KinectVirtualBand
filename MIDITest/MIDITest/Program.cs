@@ -40,15 +40,35 @@ namespace MIDITest
     {
         static void Main()
         {
-            SineWaveOscillator osc = new SineWaveOscillator(44100);
-            osc.Frequency = 440;
-            osc.Amplitude = 8192;
+            SineWaveOscillator osc1 = new SineWaveOscillator(44100);
+            SineWaveOscillator osc2 = new SineWaveOscillator(44100);
+            SineWaveOscillator osc3 = new SineWaveOscillator(44100);
 
-            WaveOut waveOut = new WaveOut();
-            waveOut.Init(osc);
-            waveOut.Play();
-            //Thread.Sleep(1000);
-            //waveOut.Stop();
+            osc1.Frequency = 783;
+            osc2.Frequency = 659;
+            osc3.Frequency = 523;
+
+            osc1.Amplitude = 8192;
+            osc2.Amplitude = 8192;
+            osc3.Amplitude = 8192;
+
+            WaveOut waveOut1 = new WaveOut();
+            WaveOut waveOut2 = new WaveOut();
+            WaveOut waveOut3 = new WaveOut();
+
+            for (int i = 0; i < 10; i++)
+            {
+                waveOut1.Init(osc1);
+                waveOut2.Init(osc2);
+                waveOut3.Init(osc3);
+                waveOut1.Play();
+                waveOut2.Play();
+                waveOut3.Play();
+                Thread.Sleep(1000);
+                waveOut1.Stop();
+                waveOut2.Stop();
+                waveOut3.Stop();
+            }
         }
     }
     /*
