@@ -2,11 +2,56 @@
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
-using NAudio.Midi;
+using NAudio.Wave;
 
 namespace MIDITest
 {
+    class SineWaveOscillator : WaveProvider16
+    {
+        double phaseAngle;
 
+        public SineWaveOscillator(int sampleRate) :
+          base(sampleRate, 1)
+        {
+        }
+
+        public double Frequency { set; get; }
+        public short Amplitude { set; get; }
+
+        public override int Read(short[] buffer, int offset,
+          int sampleCount)
+        {
+
+            for (int index = 0; index < sampleCount; index++)
+            {
+                buffer[offset + index] =
+                  (short)(Amplitude * Math.Sin(phaseAngle));
+                phaseAngle +=
+                  2 * Math.PI * Frequency / WaveFormat.SampleRate;
+
+                if (phaseAngle > 2 * Math.PI)
+                    phaseAngle -= 2 * Math.PI;
+            }
+            return sampleCount;
+        }
+    }
+
+    class program
+    {
+        static void Main()
+        {
+            SineWaveOscillator osc = new SineWaveOscillator(44100);
+            osc.Frequency = 440;
+            osc.Amplitude = 8192;
+
+            WaveOut waveOut = new WaveOut();
+            waveOut.Init(osc);
+            waveOut.Play();
+            //Thread.Sleep(1000);
+            //waveOut.Stop();
+        }
+    }
+    /*
     [StructLayout(LayoutKind.Sequential)]
     public struct MidiOutCaps
     {
@@ -86,6 +131,6 @@ namespace MIDITest
 
         }
 
-    }
+    }*/
 
 }
