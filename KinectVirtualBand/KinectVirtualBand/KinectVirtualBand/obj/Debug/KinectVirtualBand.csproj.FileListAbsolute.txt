@@ -17,3 +17,4 @@ C:\Users\kchen12\Desktop\Fall2016\CSE379\gitKinect\KinectVirtualBand\KinectVirtu
 C:\Users\kchen12\Desktop\Fall2016\CSE379\gitKinect\KinectVirtualBand\KinectVirtualBand\KinectVirtualBand\obj\Debug\KinectVirtualBand.csproj.GenerateResource.Cache
 C:\Users\kchen12\Desktop\Fall2016\CSE379\gitKinect\KinectVirtualBand\KinectVirtualBand\KinectVirtualBand\obj\Debug\KinectVirtualBand.exe
 C:\Users\kchen12\Desktop\Fall2016\CSE379\gitKinect\KinectVirtualBand\KinectVirtualBand\KinectVirtualBand\obj\Debug\KinectVirtualBand.pdb
+C:\Users\kchen12\Desktop\Fall2016\CSE379\gitKinect\KinectVirtualBand\KinectVirtualBand\KinectVirtualBand\bin\Debug\KinectVirtualBand.XML

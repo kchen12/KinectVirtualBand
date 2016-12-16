@@ -1,0 +1,167 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>KinectVirtualBand</name>
+    </assembly>
+    <members>
+        <member name="T:KinectVirtualBand.App">
+            <summary>
+            Interaction logic for App.xaml
+            </summary>
+            <summary>
+            App
+            </summary>
+        </member>
+        <member name="M:KinectVirtualBand.App.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="M:KinectVirtualBand.App.Main">
+            <summary>
+            Application Entry Point.
+            </summary>
+        </member>
+        <member name="T:KinectVirtualBand.SineWaveOscillator">
+            <summary>
+            SineWaveOScillator class that is used to play music notes
+            Frequency and amplitude decide which note is played and how loud respectively
+            </summary>
+        </member>
+        <member name="T:KinectVirtualBand.MIDIEventHandler">
+            <summary>
+            This is the signiture of the event handler that will be called later
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="T:KinectVirtualBand.MIDIEventArgs">
+            <summary>
+            The MIDIEventArgs extends EventArgs, and is what is fired when the listener is triggered
+            </summary>
+        </member>
+        <member name="T:KinectVirtualBand.MIDIListener">
+            <summary>
+            The MIDIEventListener is used to trigger events, more specifically the "add" function triggers the event
+            </summary>
+        </member>
+        <member name="T:KinectVirtualBand.MainWindow">
+            <summary>
+            Interaction logic for MainWindow.xaml
+            </summary>
+            <summary>
+            MainWindow
+            </summary>
+        </member>
+        <member name="F:KinectVirtualBand.MainWindow.colorBitmap">
+            <summary>
+            Bitmap that will hold color information
+            </summary>
+        </member>
+        <member name="F:KinectVirtualBand.MainWindow.colorPixels">
+            <summary>
+            Intermediate storage for the color data recieved from the camera
+            </summary>
+        </member>
+        <member name="F:KinectVirtualBand.MainWindow.sensor">
+            <summary>
+            Active Kinect sensor
+            </summary>
+        </member>
+        <member name="M:KinectVirtualBand.MainWindow.#ctor">
+            <summary>
+            Initializes a new instance of the MainWindow class.
+            </summary>
+        </member>
+        <member name="M:KinectVirtualBand.MainWindow.WindowLoaded(System.Object,System.Windows.RoutedEventArgs)">
+            <summary>
+            Execute startup tasks
+            </summary>
+            <param name="sender">object sending the event</param>
+            <param name="e">event arguments</param>
+        </member>
+        <member name="M:KinectVirtualBand.MainWindow.WindowClosing(System.Object,System.ComponentModel.CancelEventArgs)">
+            <summary>
+            Execute shutdown tasks
+            </summary>
+            <param name="sender">object sending the event</param>
+            <param name="e">event arguments</param>
+        </member>
+        <member name="M:KinectVirtualBand.MainWindow.playMusic(System.Object,KinectVirtualBand.MIDIEventArgs)">
+            <summary>
+            playMusic is the function that is calls separate threads when events are triggered
+            depending on which mode the player is in, it launches chordThread or noteThread
+            </summary>
+            <param name="sender">object sending the event</param>
+            <param name="e">MIDIEvent argument</param>
+        </member>
+        <member name="M:KinectVirtualBand.MainWindow.noteThread(System.Int32)">
+            <summary>
+            This function is called in a separate thread, and plays a single note
+            </summary>
+            <param name="note">The note value is an integer where 1 = C5, and each increment upwards is a step up on a piano. Ex, 5 = E5</param>
+        </member>
+        <member name="M:KinectVirtualBand.MainWindow.chordThread(System.Int32)">
+            <summary>
+            This function is called in a separate thread, and plays 3 note forming a major chord
+            </summary>
+            <param name="note">The note value is similar to that in noteThread, but with the single note determining the chord.  Ex, 1 = C5 major chord</param>
+        </member>
+        <member name="M:KinectVirtualBand.MainWindow.SensorAllFramesReady(System.Object,Microsoft.Kinect.AllFramesReadyEventArgs)">
+            <summary>
+            Event handler for Kinect sensor's SkeletonFrameReady event
+            </summary>
+            <param name="sender">object sending the event</param>
+            <param name="e">event arguments</param>
+        </member>
+        <member name="M:KinectVirtualBand.MainWindow.drawVisual(System.Windows.Point)">
+            <summary>
+            draws the visual indicator on the video stream to show the section of notes
+            </summary>
+            <param name="origin">The visual indicators will start from this point, which should be the center of the players body</param>
+        </member>
+        <member name="M:KinectVirtualBand.MainWindow.cartToPol(System.Double,System.Double)">
+            <summary>
+            takes cartesian points x and y and returns a polar point
+            note the "Point.x" is radius and "Point.Y" is theta
+            </summary>
+            <param name="x"></param>
+            <param name="y"></param>
+            <returns>Point, where point.x = radius, point.y = theta</returns>
+        </member>
+        <member name="M:KinectVirtualBand.MainWindow.polToCart(System.Double,System.Double)">
+            <summary>
+            Takes polar coordinates r, theta and returns a cartesian point
+            </summary>
+            <param name="r">radius, or distance from origin</param>
+            <param name="theta">angle with origin</param>
+            <returns>Point</returns>
+        </member>
+        <member name="M:KinectVirtualBand.MainWindow.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:KinectVirtualBand.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:KinectVirtualBand.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:KinectVirtualBand.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:KinectVirtualBand.Properties.Resources.NoKinectReady">
+            <summary>
+              Looks up a localized string similar to No ready Kinect found!.
+            </summary>
+        </member>
+    </members>
+</doc>

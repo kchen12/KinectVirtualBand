@@ -23,6 +23,10 @@ namespace KinectVirtualBand
     using NAudio.Midi;
     using NAudio.Wave;
 
+    /// <summary>
+    /// SineWaveOScillator class that is used to play music notes
+    /// Frequency and amplitude decide which note is played and how loud respectively
+    /// </summary>
     class SineWaveOscillator : WaveProvider16
     {
         double phaseAngle;
@@ -53,9 +57,16 @@ namespace KinectVirtualBand
         }
     }
 
-    // create event handler for playing MIDI
+    /// <summary>
+    /// This is the signiture of the event handler that will be called later
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     public delegate void MIDIEventHandler(object sender, MIDIEventArgs e);
 
+    /// <summary>
+    /// The MIDIEventArgs extends EventArgs, and is what is fired when the listener is triggered
+    /// </summary>
     public class MIDIEventArgs : EventArgs
     {
         private int _note;
@@ -69,6 +80,9 @@ namespace KinectVirtualBand
         }
     }
 
+    /// <summary>
+    /// The MIDIEventListener is used to trigger events, more specifically the "add" function triggers the event
+    /// </summary>
     public class MIDIListener
     {
         public event MIDIEventHandler noteTriggered;
@@ -97,6 +111,8 @@ namespace KinectVirtualBand
         // true = chord mode, false = notesmode
         private bool playMode = true;
 
+        // These flags are used to make sure each thread can't be called while it is still being played
+        // 6 flags, each for a note, 6 notes total
         private bool flag1 = false;
         private bool flag2 = false;
         private bool flag3 = false;
@@ -105,6 +121,8 @@ namespace KinectVirtualBand
         private bool flag6 = false;
 
         private Point origin = new Point(0,0);
+        // We did not get the chance to develop the use of the z axis, if we had more time, this variable would contain
+        // the distance of the players center from the camera in meters
         private float bodZ = 0;
 
         /// <summary>
@@ -140,6 +158,8 @@ namespace KinectVirtualBand
             InitializeComponent();
         }
 
+        // noteHandler was our attempt to launch 2 threads at the start of the program and play notes that way
+        // we did not figure out how to make it work
         /*
         public void noteHandler()
         {
@@ -171,19 +191,18 @@ namespace KinectVirtualBand
 
             if (null != this.sensor)
             {
-                //lauch threads 
+                //////////////////////////////////////////////////////
+                // This was our attempt to launch threads at the beginning of program
                 //Thread handThread = new Thread(noteHandler);
                 //handThread.Start();
                 //while (!handThread.IsAlive) ;
+                //////////////////////////////////////////////////////
+
                 MidiListener.noteTriggered += new MIDIEventHandler(playMusic);
 
                 // Turn on the skeleton stream to receive skeleton frames
                 this.sensor.SkeletonStream.Enable();
 
-                //this.sensor.DepthStream.Enable();
-
-                // Add an event handler to be called whenever there is new color frame data
-                //this.sensor.AllFramesReady += delegate(object _sender, AllFramesReadyEventArgs _e) { this.SensorAllFramesReady(sender, e)};
                 this.sensor.AllFramesReady += this.SensorAllFramesReady;
 
                 // Turn on the color stream to receive color frames
@@ -208,7 +227,7 @@ namespace KinectVirtualBand
 
             if (null == this.sensor)
             {
-                //this.statusBarText.Text = Properties.Resources.NoKinectReady;
+                
             }
         }
 
@@ -225,7 +244,12 @@ namespace KinectVirtualBand
             }
         }
         
-        
+        /// <summary>
+        /// playMusic is the function that is calls separate threads when events are triggered
+        /// depending on which mode the player is in, it launches chordThread or noteThread
+        /// </summary>
+        /// <param name="sender">object sending the event</param>
+        /// <param name="e">MIDIEvent argument</param>
         private void playMusic(object sender, MIDIEventArgs e)
         {
             if (playMode == true)
@@ -242,6 +266,10 @@ namespace KinectVirtualBand
             }
         }
 
+        /// <summary>
+        /// This function is called in a separate thread, and plays a single note
+        /// </summary>
+        /// <param name="note">The note value is an integer where 1 = C5, and each increment upwards is a step up on a piano. Ex, 5 = E5</param>
         private void noteThread(int note)
         {
             SineWaveOscillator osc1 = new SineWaveOscillator(44100);
@@ -287,6 +315,10 @@ namespace KinectVirtualBand
             }
         }
 
+        /// <summary>
+        /// This function is called in a separate thread, and plays 3 note forming a major chord
+        /// </summary>
+        /// <param name="note">The note value is similar to that in noteThread, but with the single note determining the chord.  Ex, 1 = C5 major chord</param>
         private void chordThread(int note)
         {
             SineWaveOscillator osc1 = new SineWaveOscillator(44100);
@@ -347,31 +379,6 @@ namespace KinectVirtualBand
                     break;
             }
 
-            /*
-            switch (note)
-            {
-                case 261:
-                    flag1 = false;
-                    break;
-                case 329:
-                    flag2 = false;
-                    break;
-                case 391:
-                    flag3 = false;
-                    break;
-                case 523:
-                    flag4 = false;
-                    break;
-                case 659:
-                    flag5 = false;
-                    break;
-                case 783:
-                    flag6 = false;
-                    break;
-                default:
-                    break;
-            }*/
-
         }
 
         /// <summary>
@@ -403,26 +410,6 @@ namespace KinectVirtualBand
                 }
             }
 
-            // Depth
-            /*using (var frame = e.OpenDepthImageFrame())
-            {
-                if (frame != null)
-                {
-                    if (_mode == CameraMode.Depth)
-                    {
-                        // Copy the pixel data from the image to a temporary array
-                        frame.CopyPixelDataTo(this.colorPixels);
-                        // Write the pixel data into our bitmap
-                        this.colorBitmap.WritePixels(
-                            new Int32Rect(0, 0, this.colorBitmap.PixelWidth, this.colorBitmap.PixelHeight),
-                            this.colorPixels,
-                            this.colorBitmap.PixelWidth * sizeof(int),
-                            0);
-                        camera.Source = colorBitmap;
-                    }
-                }
-            }*/
-
             // Body
             using (var frame = e.OpenSkeletonFrame())
             {
@@ -436,6 +423,8 @@ namespace KinectVirtualBand
                     {
                         if (body.TrackingState == SkeletonTrackingState.Tracked)
                         {
+                            // clap hands to switch between chord and note mode
+                            // note robust enough, would add flags to make the transition more smooth if have more time
                             if(Math.Abs(body.Joints[JointType.HandRight].Position.X-body.Joints[JointType.HandLeft].Position.X)<0.01 && Math.Abs(body.Joints[JointType.HandRight].Position.Y - body.Joints[JointType.HandLeft].Position.Y) < 0.01)
                             {
                                 if(playMode == true)
@@ -448,6 +437,8 @@ namespace KinectVirtualBand
                                 }
                             }
                             // COORDINATE MAPPING
+                            // in hindsight, probably didn't need the foreach.  I just built this off of the original program which is for
+                            // displaying all the joints on the video stream
                             foreach (Joint joint in body.Joints)
                             {
                                 // get center of body
@@ -492,6 +483,7 @@ namespace KinectVirtualBand
 
                                     canvas.Children.Add(ellipse);
 
+                                    // The ellipse set points uses the origin at the top left corner, where positive x is towards the right and positive y is downwards
                                     double xoff = origin.X;
                                     double yoff = origin.Y;
                                     // 240 320
@@ -499,14 +491,15 @@ namespace KinectVirtualBand
                                     point.Y = -point.Y + yoff;
                                     point.X = point.X - xoff;
 
+                                    // convert hand coordinates to polar coordinates with the center of the body being the origin
                                     System.Drawing.Point polPoint = cartToPol(point.X, point.Y);
 
                                     if ((joint.JointType == JointType.HandRight || joint.JointType == JointType.HandLeft))
                                     {
+                                        // scale is not used yet, but would be used if we incoorporated the z axis
                                         float scale = 4f*(bodZ-joint.Position.Z);
                                         scale = 1f;
-                                        //Console.WriteLine("hipDist: " + bodZ + " handDist: " + joint.Position.Z + " scale: " + scale);
-                                        //Console.WriteLine("scale: " + scale);
+                                        
                                         if (polPoint.X > 100)
                                         {
                                             if (polPoint.Y >= -30 && polPoint.Y < 10)
@@ -644,6 +637,10 @@ namespace KinectVirtualBand
 
         }
 
+        /// <summary>
+        /// draws the visual indicator on the video stream to show the section of notes
+        /// </summary>
+        /// <param name="origin">The visual indicators will start from this point, which should be the center of the players body</param>
         private void drawVisual(Point origin)
         {
             // check for random joint data
@@ -672,7 +669,6 @@ namespace KinectVirtualBand
                 line1.X2 = newX;
                 line1.Y1 = origin.Y;
                 line1.Y2 = newY;
-                //Console.WriteLine(origin.X + " " + origin.Y + ", " + newX + " " + newY);
 
                 line1.StrokeThickness = 6;
                 canvas.Children.Add(line1);
@@ -681,12 +677,12 @@ namespace KinectVirtualBand
         }
 
         /// <summary>
-        /// takes cartesian points x and y and returns a point
+        /// takes cartesian points x and y and returns a polar point
         /// note the "Point.x" is radius and "Point.Y" is theta
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        /// <returns></returns>
+        /// <returns>Point, where point.x = radius, point.y = theta</returns>
         private System.Drawing.Point cartToPol(double x, double y)
         {
             double r = Math.Sqrt((x * x) + (y * y));
@@ -694,6 +690,12 @@ namespace KinectVirtualBand
             return new System.Drawing.Point((int)r, (int)((theta * 180) / Math.PI));
         }
 
+        /// <summary>
+        /// Takes polar coordinates r, theta and returns a cartesian point
+        /// </summary>
+        /// <param name="r">radius, or distance from origin</param>
+        /// <param name="theta">angle with origin</param>
+        /// <returns>Point</returns>
         private System.Windows.Point polToCart(double r, double theta)
         {
             theta = theta * (Math.PI / 180);
